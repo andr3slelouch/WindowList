@@ -9,7 +9,14 @@ class Create():
         #yaml should be deprecated soon
         CURRENT_DIR = os.path.dirname(__file__)
         config_path = os.path.join(CURRENT_DIR, 'blacklist.yml')
-        self.config = yaml.load(file(config_path))
+        with open(config_path, 'r') as stream:
+            try:
+                #print(yaml.safe_load(stream))
+                self.config = yaml.safe_load(stream)
+                #print(self.config)
+                #print("Loaded")
+            except yaml.YAMLError as exc:
+                print(exc)
 
 
     def get_desktops(self):
@@ -19,12 +26,12 @@ class Create():
         p1 = subprocess.Popen(['wmctrl','-d'], stdout=subprocess.PIPE)
         (sout,serr) = p1.communicate()
 
-        for line in sout.split('\n'):
+        for line in sout.split(b'\n'):
             if not line:
                 continue
 
-            id = line.split(' ')[0]
-            title = line.split(' ')[-1]
+            id = line.split(b' ')[0]
+            title = line.split(b' ')[-1]
 
             # add desktops
             desktop_list[id] = {'title': title, 'windows': {}}
@@ -33,8 +40,8 @@ class Create():
             for window in windows_list:
                 if window['desktop_id'] == int(id):
                     desktop_list[id]['windows'][window['id']] = window['title']
-
-        for desktop in desktop_list.keys():
+        temp_dict = dict(desktop_list)
+        for desktop in temp_dict.keys():
             if len(desktop_list[desktop]['windows']) == 0:
                 del desktop_list[desktop]
 
@@ -48,14 +55,13 @@ class Create():
         (sout,serr) = p1.communicate()
 
         hostname = socket.gethostname()
-
         # ugly get list, XLIB/XCB coming soon
-        for line in sout.split('\n'):
-            if hostname in line:
+        for line in sout.split(b'\n'):
+            if hostname in str(line):
 
-                id = line.split(' ')[0]
+                id = line.split(b' ')[0]
 
-                desktop_id = line.split(' ')[2] or 0
+                desktop_id = line.split(b' ')[2] or 0
 
                 '''
                 Sometimes it can bring trash, we just want digits
@@ -68,10 +74,11 @@ class Create():
                 title = line[title_pos:]
 
                 flag = 0
+                #print(self.config)
                 for s in self.config['blacklist']:
-                    if title in s:
-                        flag = 1
-                        break
+                    #if title in s:
+                    #    flag = 1
+                    break
 
                 # ugly parent continue
                 if flag == 1:

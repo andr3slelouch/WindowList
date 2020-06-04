@@ -1,12 +1,12 @@
 from gi.repository import Gtk, Gdk
-import ConfigParser
+import configparser
 import os
 
 class Handler():
     def __init__(self):
         CURRENT_DIR = os.path.dirname(__file__)
         self.cfg_file_name = os.path.join(CURRENT_DIR, 'settings')
-        self.cfg_parser = ConfigParser.ConfigParser()
+        self.cfg_parser = configparser.ConfigParser()
         self.cfg_parser.readfp(open(self.cfg_file_name))
 
     def update_file(self):
@@ -27,5 +27,3 @@ class Handler():
             screen = Gdk.Screen.get_default()
             Gtk.StyleContext.add_provider_for_screen(screen, css_provider,
                      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
-

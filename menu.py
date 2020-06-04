@@ -14,12 +14,12 @@ class Menu(Gtk.Menu):
         p1 = subprocess.Popen(('find', '/usr/share/themes', '-type', 'd', '-name', 'gtk-3.0'), stdout=subprocess.PIPE)
         (sout,serr) = p1.communicate()
 
-        for line in sout.split('\n'):
+        for line in sout.split(b'\n'):
             if not line:
                 continue
 
-            name = line.split('/')[4]
-            themes[name] = line + '/gtk.css'
+            name = line.split(b'/')[4]
+            themes[name] = line + b'/gtk.css'
 
         self.themes = themes
 
@@ -35,8 +35,8 @@ class Menu(Gtk.Menu):
         themeMenu.connect("button_press_event", self.theme_clicked, '')
 
         themesMenu.append(themeMenu)
-
-        for theme, path in self.themes.iteritems():
+        #print(self.themes.items())
+        for theme, path in self.themes.items():
             themeMenu = Gtk.MenuItem(theme)
             themeMenu.connect("button_press_event", self.theme_clicked, path)
             themesMenu.append(themeMenu)

@@ -6,7 +6,9 @@ import desktops
 import events
 import menu
 import settings
-import var_dump
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version('Wnck', '3.0')
 from gi.repository import Gtk, Gdk, cairo, Wnck as wnck
 
 class Create(Gtk.Window):
@@ -62,9 +64,8 @@ class Create(Gtk.Window):
         wnck_screen.force_update()
         wnck_list = wnck_screen.get_windows()
 
-        for key, desktop in self.new_desktop_list.iteritems():
-
-            bufferf = "%s" % (desktop['title'])
+        for key, desktop in self.new_desktop_list.items():
+            bufferf = "%s" % (desktop['title'].decode('utf-8'))
 
             frame = Gtk.Frame()
             transparency.Transparent.makeTransparent(frame)
@@ -73,7 +74,7 @@ class Create(Gtk.Window):
             mainBox = Gtk.VBox(False)
 
             #VButtonBox.set_layout(gtk.BUTTONBOX_START);
-            for window in desktop['windows'].iteritems():
+            for window in desktop['windows'].items():
 
                 # convert hex id to int for comparison
                 id_int = int(window[0],16)
@@ -97,17 +98,15 @@ class Create(Gtk.Window):
 
             frame.set_shadow_type(Gtk.ShadowType.NONE)
             frame.show()
-
             label = Gtk.Label(bufferf)
-            
+
             self.notebook.append_page(frame, label)
 
     def add_button(self, win_title, win_id, wnck_window):
         image = Gtk.Image()
         image.set_from_pixbuf(wnck_window.get_icon())
-
         btn1 = Gtk.Button('')
-        btn1.set_tooltip_text (win_title);
+        btn1.set_tooltip_text(win_title.decode("utf-8") )
         btn1.set_always_show_image(True)
         btn1.set_image(image)
         btn1.win_id = win_id
